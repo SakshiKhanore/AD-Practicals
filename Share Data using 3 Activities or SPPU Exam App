@@ -1,0 +1,131 @@
+File: AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myexp">
+    <application
+        android:allowBackup="true"
+        android:label="Share Data App"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".SecondActivity"  android:exported="false"/>
+        <activity android:name=".ThirdActivity"   android:exported="false"/>
+    </application>
+</manifest>
+
+File: activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="16dp" android:gravity="center">
+
+    <TextView android:text="Activity 1 - Enter Details"
+        android:textSize="20sp" android:textStyle="bold"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText android:id="@+id/etName" android:hint="Enter Name"
+        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <EditText android:id="@+id/etRoll" android:hint="Enter Roll No"
+        android:inputType="number"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+    <Button android:id="@+id/btnNext" android:text="Next"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+</LinearLayout>
+
+File: MainActivity.java
+package com.example.myexp;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        EditText etName = findViewById(R.id.etName);
+        EditText etRoll = findViewById(R.id.etRoll);
+        Button btnNext  = findViewById(R.id.btnNext);
+
+        btnNext.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SecondActivity.class);
+            intent.putExtra("NAME", etName.getText().toString());
+            intent.putExtra("ROLL", etRoll.getText().toString());
+            startActivity(intent);
+        });
+    }
+}
+
+File: SecondActivity.java
+package com.example.myexp;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        String name = getIntent().getStringExtra("NAME");
+        String roll = getIntent().getStringExtra("ROLL");
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 40, 40, 40);
+
+        TextView tv = new TextView(this);
+        tv.setTextSize(18);
+        tv.setText("Activity 2\nName: " + name + "\nRoll: " + roll);
+        layout.addView(tv);
+
+        Button btn = new Button(this);
+        btn.setText("Next Activity");
+        btn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ThirdActivity.class);
+            intent.putExtra("NAME", name);
+            intent.putExtra("ROLL", roll);
+            startActivity(intent);
+        });
+        layout.addView(btn);
+        setContentView(layout);
+    }
+}
+
+File: ThirdActivity.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ThirdActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        String name = getIntent().getStringExtra("NAME");
+        String roll = getIntent().getStringExtra("ROLL");
+
+        TextView tv = new TextView(this);
+        tv.setTextSize(18);
+        tv.setPadding(40, 40, 40, 40);
+        tv.setText("Final Activity 3\nName: " + name +
+                   "\nRoll: " + roll + "\nData shared successfully!");
+        setContentView(tv);
+    }
+}

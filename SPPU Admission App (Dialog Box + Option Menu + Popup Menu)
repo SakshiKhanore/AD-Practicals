@@ -1,0 +1,110 @@
+File: AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myexp">
+    <application
+        android:allowBackup="true"
+        android:label="SPPU Admission"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+File: activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="16dp" android:gravity="center">
+
+    <TextView android:text="SPPU Admission App" android:textSize="22sp"
+        android:textStyle="bold" android:layout_marginBottom="24dp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <Button android:id="@+id/btnDialog" android:text="Apply for Admission"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"/>
+
+    <Button android:id="@+id/btnPopup" android:text="Show Popup Menu"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView android:id="@+id/tvMessage" android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</LinearLayout>
+
+File: res/menu/popup_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menuEngineering" android:title="Engineering"/>
+    <item android:id="@+id/menuMBA"         android:title="MBA"/>
+    <item android:id="@+id/menuMCA"         android:title="MCA"/>
+</menu>
+
+File: MainActivity.java
+package com.example.myexp;
+
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    TextView tvMessage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        tvMessage = findViewById(R.id.tvMessage);
+        Button btnDialog = findViewById(R.id.btnDialog);
+        Button btnPopup  = findViewById(R.id.btnPopup);
+
+        // Alert Dialog
+        btnDialog.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Admission Confirmation");
+            builder.setMessage("Do you want to apply for SPPU admission?");
+            builder.setPositiveButton("Yes", (dialog, which) ->
+                    tvMessage.setText("Application Submitted!"));
+            builder.setNegativeButton("No", (dialog, which) ->
+                    tvMessage.setText("Application Cancelled."));
+            builder.show();
+        });
+
+        // Popup Menu
+        btnPopup.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(this, v);
+            popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                tvMessage.setText("Course: " + item.getTitle());
+                return true;
+            });
+            popup.show();
+        });
+    }
+
+    // Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 0, "Home");
+        menu.add(0, 2, 0, "About");
+        menu.add(0, 3, 0, "Contact");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        tvMessage.setText("Option: " + item.getTitle());
+        return true;
+    }
+}
+

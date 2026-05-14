@@ -1,0 +1,85 @@
+File: AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myexp">
+    <application
+        android:allowBackup="true"
+        android:label="Admission App"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+File: activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="5"
+        android:padding="16dp"
+        android:useDefaultMargins="true">
+
+        <TextView android:text="College Admission Form"
+            android:textSize="20sp" android:textStyle="bold"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal"
+            android:layout_width="0dp"/>
+
+        <TextView android:text="Name:" android:layout_gravity="center_vertical"/>
+        <EditText android:id="@+id/etName" android:hint="Enter name"
+            android:layout_width="0dp" android:layout_columnWeight="1"/>
+
+        <TextView android:text="Course:" android:layout_gravity="center_vertical"/>
+        <EditText android:id="@+id/etCourse" android:hint="Enter course"
+            android:layout_width="0dp" android:layout_columnWeight="1"/>
+
+        <TextView android:text="Marks %:" android:layout_gravity="center_vertical"/>
+        <EditText android:id="@+id/etMarks" android:hint="Enter marks"
+            android:inputType="numberDecimal"
+            android:layout_width="0dp" android:layout_columnWeight="1"/>
+
+        <Button android:id="@+id/btnSubmit" android:text="Submit"
+            android:layout_columnSpan="2" android:layout_gravity="fill_horizontal"
+            android:layout_width="0dp"/>
+
+        <TextView android:id="@+id/tvResult"
+            android:layout_columnSpan="2" android:layout_gravity="fill_horizontal"
+            android:layout_width="0dp" android:textSize="16sp" android:padding="8dp"/>
+    </GridLayout>
+</ScrollView>
+
+File: MainActivity.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        EditText etName   = findViewById(R.id.etName);
+        EditText etCourse = findViewById(R.id.etCourse);
+        EditText etMarks  = findViewById(R.id.etMarks);
+        Button btnSubmit  = findViewById(R.id.btnSubmit);
+        TextView tvResult = findViewById(R.id.tvResult);
+
+        btnSubmit.setOnClickListener(v -> {
+            String result = "Name: "   + etName.getText()   + "\n" +
+                            "Course: " + etCourse.getText() + "\n" +
+                            "Marks: "  + etMarks.getText()  + "%";
+            tvResult.setText(result);
+        });
+    }
+}

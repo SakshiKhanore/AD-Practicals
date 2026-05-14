@@ -1,0 +1,130 @@
+File: AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myexp">
+    <application
+        android:allowBackup="true"
+        android:label="Student Registration"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ResultActivity" android:exported="false"/>
+    </application>
+</manifest>
+
+File: activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <TextView android:text="Student Registration" android:textSize="20sp"
+            android:textStyle="bold" android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+        <EditText android:id="@+id/etName" android:hint="Student Name"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Select Subject:" android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/spinnerSubject"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Gender:" android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioGroup android:id="@+id/rgGender" android:orientation="horizontal"
+            android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <RadioButton android:id="@+id/rbMale"   android:text="Male"/>
+            <RadioButton android:id="@+id/rbFemale" android:text="Female"/>
+        </RadioGroup>
+
+        <TextView android:text="Qualification:" android:layout_marginTop="8dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbSSC"    android:text="SSC"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbHSC"    android:text="HSC"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbDiploma" android:text="Diploma"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+        <Button android:id="@+id/btnSubmit" android:text="Submit"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
+    </LinearLayout>
+</ScrollView>
+
+File: MainActivity.java
+package com.example.myexp;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        EditText etName     = findViewById(R.id.etName);
+        Spinner spinner     = findViewById(R.id.spinnerSubject);
+        RadioGroup rgGender = findViewById(R.id.rgGender);
+        CheckBox cbSSC      = findViewById(R.id.cbSSC);
+        CheckBox cbHSC      = findViewById(R.id.cbHSC);
+        CheckBox cbDiploma  = findViewById(R.id.cbDiploma);
+        Button btnSubmit    = findViewById(R.id.btnSubmit);
+
+        String[] subjects = {"Maths", "Physics", "Chemistry", "Biology", "CS"};
+        spinner.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, subjects));
+
+        btnSubmit.setOnClickListener(v -> {
+            String name    = etName.getText().toString();
+            String subject = spinner.getSelectedItem().toString();
+            int gId        = rgGender.getCheckedRadioButtonId();
+            String gender  = (gId == R.id.rbMale) ? "Male" : "Female";
+
+            String qual = "";
+            if (cbSSC.isChecked())     qual += "SSC ";
+            if (cbHSC.isChecked())     qual += "HSC ";
+            if (cbDiploma.isChecked()) qual += "Diploma";
+
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtra("NAME",          name);
+            intent.putExtra("SUBJECT",       subject);
+            intent.putExtra("GENDER",        gender);
+            intent.putExtra("QUALIFICATION", qual.trim());
+            startActivity(intent);
+        });
+    }
+}
+
+File: ResultActivity.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ResultActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        TextView tv = new TextView(this);
+        tv.setTextSize(18);
+        tv.setPadding(40, 40, 40, 40);
+        tv.setText("Registration Details\n\n" +
+            "Name: "          + getIntent().getStringExtra("NAME")          + "\n" +
+            "Subject: "       + getIntent().getStringExtra("SUBJECT")       + "\n" +
+            "Gender: "        + getIntent().getStringExtra("GENDER")        + "\n" +
+            "Qualification: " + getIntent().getStringExtra("QUALIFICATION"));
+        setContentView(tv);
+    }
+}

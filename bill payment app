@@ -1,0 +1,151 @@
+File: AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myexp">
+    <application
+        android:allowBackup="true"
+        android:label="Bill Payment App"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+File: activity_main.xml  (same as Exp 5 — reuse)
+<!-- Same layout as Exp 5. Replace button labels: "Bill Details" and "Pay Now" -->
+
+File: fragment_bill_details.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="16dp" android:gravity="center">
+
+    <TextView android:text="Bill Details" android:textSize="20sp"
+        android:textStyle="bold" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText android:id="@+id/etBillNo" android:hint="Bill Number"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+    <EditText android:id="@+id/etAmount" android:hint="Amount (Rs)"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+    <Button android:id="@+id/btnProceedPayment" android:text="Proceed to Payment"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+</LinearLayout>
+
+File: fragment_payment.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="16dp" android:gravity="center">
+
+    <TextView android:text="Payment" android:textSize="20sp" android:textStyle="bold"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <RadioGroup android:id="@+id/rgPayMode" android:orientation="vertical"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+        <RadioButton android:id="@+id/rbUPI"  android:text="UPI"/>
+        <RadioButton android:id="@+id/rbCard" android:text="Credit/Debit Card"/>
+        <RadioButton android:id="@+id/rbNet"  android:text="Net Banking"/>
+    </RadioGroup>
+
+    <Button android:id="@+id/btnPay" android:text="Pay Now"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+    <TextView android:id="@+id/tvPayResult" android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</LinearLayout>
+
+File: BillDetailsFragment.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.fragment.app.Fragment;
+
+public class BillDetailsFragment extends Fragment {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_bill_details, container, false);
+        Button btn = view.findViewById(R.id.btnProceedPayment);
+        btn.setOnClickListener(v -> {
+            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragmentContainer, new PaymentFragment());
+            ft.commit();
+        });
+        return view;
+    }
+}
+
+File: PaymentFragment.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+public class PaymentFragment extends Fragment {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_payment, container, false);
+
+        RadioGroup rg     = view.findViewById(R.id.rgPayMode);
+        Button btnPay     = view.findViewById(R.id.btnPay);
+        TextView tvResult = view.findViewById(R.id.tvPayResult);
+
+        btnPay.setOnClickListener(v -> {
+            int id = rg.getCheckedRadioButtonId();
+            RadioButton rb = view.findViewById(id);
+            tvResult.setText("Payment via " + rb.getText() + " successful!");
+        });
+        return view;
+    }
+}
+
+File: MainActivity.java
+package com.example.myexp;
+
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button btnBill = findViewById(R.id.btnDest);
+        Button btnPay  = findViewById(R.id.btnBook);
+
+        loadFragment(new BillDetailsFragment());
+
+        btnBill.setOnClickListener(v -> loadFragment(new BillDetailsFragment()));
+        btnPay.setOnClickListener(v  -> loadFragment(new PaymentFragment()));
+    }
+
+    void loadFragment(androidx.fragment.app.Fragment f) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentContainer, f);
+        ft.commit();
+    }
+}
+
